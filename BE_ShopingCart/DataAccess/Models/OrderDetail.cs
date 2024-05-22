@@ -12,6 +12,6 @@ namespace DataAccess.Models
         public decimal? Price { get; set; }
 
         public virtual Order? Order { get; set; }
-        public virtual ProductImage? Product { get; set; }
+        public virtual Product? Product { get; set; }
     }
 }
