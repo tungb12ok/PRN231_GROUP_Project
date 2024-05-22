@@ -5,14 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.Extensions.Configuration;
 
 #nullable disable
 
 namespace DataAccess.Migrations
 {
-    [DbContext(typeof(FPTShopContext))]
-    partial class FPTShopContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(FPTshopContext))]
+    partial class FPTshopContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -44,7 +43,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Status");
+                    b.HasIndex(new[] { "Status" }, "IX_Category_Status");
 
                     b.ToTable("Category", (string)null);
                 });
@@ -93,9 +92,9 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex(new[] { "ProductId" }, "IX_Feedback_ProductId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex(new[] { "UserId" }, "IX_Feedback_UserId");
 
                     b.ToTable("Feedback", (string)null);
                 });
@@ -122,9 +121,9 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Status");
+                    b.HasIndex(new[] { "Status" }, "IX_Order_Status");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex(new[] { "UserId" }, "IX_Order_UserId");
 
                     b.ToTable("Order", (string)null);
                 });
@@ -151,9 +150,9 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex(new[] { "OrderId" }, "IX_OrderDetail_OrderId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex(new[] { "ProductId" }, "IX_OrderDetail_ProductId");
 
                     b.ToTable("OrderDetail", (string)null);
                 });
@@ -183,7 +182,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Status");
+                    b.HasIndex(new[] { "Status" }, "IX_Product_Status");
 
                     b.ToTable("Product", (string)null);
                 });
@@ -205,9 +204,46 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex(new[] { "ProductId" }, "IX_ProductImage_ProductId");
 
                     b.ToTable("ProductImage", (string)null);
+                });
+
+            modelBuilder.Entity("DataAccess.Models.ProductVariant", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("color");
+
+                    b.Property<bool?>("Lock")
+                        .HasColumnType("bit")
+                        .HasColumnName("lock");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int")
+                        .HasColumnName("productId");
+
+                    b.Property<int?>("Quantity")
+                        .HasColumnType("int")
+                        .HasColumnName("quantity");
+
+                    b.Property<string>("Size")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(10)")
+                        .HasColumnName("size");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductVariants");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Role", b =>
@@ -277,11 +313,11 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex(new[] { "OrderId" }, "IX_Transaction_OrderId");
 
-                    b.HasIndex("Status");
+                    b.HasIndex(new[] { "Status" }, "IX_Transaction_Status");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex(new[] { "UserId" }, "IX_Transaction_UserId");
 
                     b.ToTable("Transaction", (string)null);
                 });
@@ -336,9 +372,9 @@ namespace DataAccess.Migrations
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex(new[] { "RoleId" }, "IX_User_RoleId");
 
-                    b.HasIndex("Status");
+                    b.HasIndex(new[] { "Status" }, "IX_User_Status");
 
                     b.ToTable("User", (string)null);
                 });
@@ -364,7 +400,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Status");
+                    b.HasIndex(new[] { "Status" }, "IX_Voucher_Status");
 
                     b.ToTable("Voucher", (string)null);
                 });
@@ -434,10 +470,10 @@ namespace DataAccess.Migrations
                         .HasForeignKey("OrderId")
                         .HasConstraintName("FK_OrderDetail_Order");
 
-                    b.HasOne("DataAccess.Models.ProductImage", "Product")
+                    b.HasOne("DataAccess.Models.Product", "Product")
                         .WithMany("OrderDetails")
                         .HasForeignKey("ProductId")
-                        .HasConstraintName("FK_OrderDetail_ProductImage");
+                        .HasConstraintName("FK_OrderDetail_Product");
 
                     b.Navigation("Order");
 
@@ -460,6 +496,16 @@ namespace DataAccess.Migrations
                         .WithMany("ProductImages")
                         .HasForeignKey("ProductId")
                         .HasConstraintName("FK_ProductImage_Product");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("DataAccess.Models.ProductVariant", b =>
+                {
+                    b.HasOne("DataAccess.Models.Product", "Product")
+                        .WithMany("ProductVariants")
+                        .HasForeignKey("ProductId")
+                        .HasConstraintName("FK_ProductVariants_Product");
 
                     b.Navigation("Product");
                 });
@@ -530,12 +576,11 @@ namespace DataAccess.Migrations
                 {
                     b.Navigation("Feedbacks");
 
-                    b.Navigation("ProductImages");
-                });
-
-            modelBuilder.Entity("DataAccess.Models.ProductImage", b =>
-                {
                     b.Navigation("OrderDetails");
+
+                    b.Navigation("ProductImages");
+
+                    b.Navigation("ProductVariants");
                 });
 
             modelBuilder.Entity("DataAccess.Models.Role", b =>

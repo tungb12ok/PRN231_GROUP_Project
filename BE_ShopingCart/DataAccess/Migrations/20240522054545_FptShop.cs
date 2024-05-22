@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DataAccess.Migrations
 {
-    public partial class FPTShopDB : Migration
+    public partial class FptShop : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -148,6 +148,27 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductVariants",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false),
+                    productId = table.Column<int>(type: "int", nullable: true),
+                    size = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
+                    color = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    quantity = table.Column<int>(type: "int", nullable: true),
+                    @lock = table.Column<bool>(name: "lock", type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductVariants", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_ProductVariants_Product",
+                        column: x => x.productId,
+                        principalTable: "Product",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Customer",
                 columns: table => new
                 {
@@ -238,9 +259,9 @@ namespace DataAccess.Migrations
                         principalTable: "Order",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_OrderDetail_ProductImage",
+                        name: "FK_OrderDetail_Product",
                         column: x => x.ProductId,
-                        principalTable: "ProductImage",
+                        principalTable: "Product",
                         principalColumn: "Id");
                 });
 
@@ -323,6 +344,11 @@ namespace DataAccess.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductVariants_productId",
+                table: "ProductVariants",
+                column: "productId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Transaction_OrderId",
                 table: "Transaction",
                 column: "OrderId");
@@ -368,19 +394,22 @@ namespace DataAccess.Migrations
                 name: "OrderDetail");
 
             migrationBuilder.DropTable(
+                name: "ProductImage");
+
+            migrationBuilder.DropTable(
+                name: "ProductVariants");
+
+            migrationBuilder.DropTable(
                 name: "Transaction");
 
             migrationBuilder.DropTable(
                 name: "Voucher");
 
             migrationBuilder.DropTable(
-                name: "ProductImage");
+                name: "Product");
 
             migrationBuilder.DropTable(
                 name: "Order");
-
-            migrationBuilder.DropTable(
-                name: "Product");
 
             migrationBuilder.DropTable(
                 name: "User");
