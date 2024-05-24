@@ -1,30 +1,26 @@
 ﻿using DataAccess.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography.Xml;
 
 namespace WEB.Controllers
 {
-    public class ProductController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ProductController : ControllerBase
     {
         private readonly FPTshopContext _context;
-
         public ProductController(FPTshopContext context)
         {
             _context = context;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
         }
 
         [HttpGet]
         public IActionResult getProductAll()
         {
             var products = _context.Products
-                .Include(s => s.StatusNavigation)                    
-                .Where(x=> x.StatusNavigation.Name.SequenceEqual("Active"))
+                .Include(s => s.StatusNavigation)
+                .Where(x => x.StatusNavigation.Name.SequenceEqual("Active"))
                 .ToList();
             return StatusCode(200, products);
         }
@@ -36,7 +32,7 @@ namespace WEB.Controllers
                 .Where(x => x.StatusNavigation.Name.SequenceEqual("Active") && x.Id == id)
                 .FirstOrDefault();
 
-            if(products == null)
+            if (products == null)
             {
                 return StatusCode(400, "Product doesn't exits!");
             }

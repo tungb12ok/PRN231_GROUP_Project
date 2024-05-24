@@ -10,14 +10,14 @@ namespace BussinessLogic
 {
     public class UserServices : IUserRepository
     {
-        private FPTShopContext context;
+        private FPTshopContext context;
         private static UserServices instance = null;
         private readonly static Object instanceLock = new Object();
 
 
         public UserServices()
         {
-            context = new FPTShopContext();
+            context = new FPTshopContext();
         }
 
         public static UserServices Instance
